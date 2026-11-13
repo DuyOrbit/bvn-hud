@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BvN Tournament HUD - Launcher</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .launcher-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 30px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    .grid-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 25px;
+    }
+    .link-box {
+      background: var(--bg-card-sub);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 24px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .link-box:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .link-box h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+    }
+    .obs-tip {
+      margin-top: 30px;
+      padding: 16px;
+      border-radius: 8px;
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      text-align: left;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="max-width: 800px; margin-top: 40px;">
+    <div class="logo-area" style="justify-content: center; margin-bottom: 20px;">
+      <div class="logo-badge" style="font-size: 1.5rem; padding: 12px 24px;">BLEACH VS NARUTO</div>
+    </div>
+    
+    <div class="launcher-card">
+      <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1.6rem; letter-spacing: 1px;">
+        HỆ THỐNG STREAM OVERLAY GIẢI ĐẤU
+      </h2>
+      <p style="color: var(--text-muted); margin-top: 8px;">
+        Chuyển cảnh liền mạch 60fps • Tích hợp VDO.Ninja • Bảng điều khiển Admin 0ms
+      </p>
+
+      <div class="grid-links">
+        <a href="admin.html" class="link-box">
+          <span style="font-size: 2.5rem;">🎛️</span>
+          <h3>BẢNG ADMIN ĐIỀU KHIỂN</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Dành cho Trọng tài & Caster (Đổi tên, chỉnh điểm, chuyển Scene Versus ↔ Ingame ↔ Winner)
+          </p>
+        </a>
+
+        <a href="overlay.html" target="_blank" class="link-box">
+          <span style="font-size: 2.5rem;">📺</span>
+          <h3>MÀN HÌNH OVERLAY (OBS)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Dán đường dẫn này vào OBS Browser Source (Độ phân giải 1920 x 1080)
+          </p>
+        </a>
+      </div>
+
+      <div class="obs-tip">
+        <strong style="color: var(--bleach-blue);">💡 HƯỚNG DẪN THÊM VÀO OBS STUDIO:</strong>
+        <ol style="margin-left: 20px; margin-top: 8px;">
+          <li>Trong OBS Studio, tạo 1 Source mới dạng <strong>Browser (Trình duyệt)</strong>.</li>
+          <li>Đặt <strong>URL</strong> là link localhost: <code>http://localhost/bvn tournament hud/overlay.html</code> hoặc chọn <em>Local file</em> trỏ tới file <code>overlay.html</code>.</li>
+          <li>Cài đặt <strong>Width: 1920</strong> và <strong>Height: 1080</strong>.</li>
+          <li>Mở <code>admin.html</code> trên trình duyệt web của bạn và thoải mái bấm nút chuyển Scene!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

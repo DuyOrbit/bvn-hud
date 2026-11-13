@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+  <title>BvN Tournament HUD - Stream Overlay</title>
+  <link rel="stylesheet" href="css/overlay.css">
+</head>
+<body class="scene-versus">
+
+  <!-- ========================================================
+       WEBCAM PLAYERS (CHẠY XUYÊN SUỐT KHÔNG RELOAD STREAM)
+       ======================================================== -->
+  <!-- Cam Player 1 (Bleach Side) -->
+  <div id="cam1" class="cam-wrapper p1">
+    <iframe id="iframe1" allow="autoplay; camera; microphone; fullscreen; display-capture"></iframe>
+    <div id="mock1" class="mock-cam p1-cam-bg">
+      <div class="mock-pulse-wave"></div>
+      <div class="mock-avatar">🗡️</div>
+      <div class="mock-cam-tag">1P • BLEACH CAM</div>
+    </div>
+    <div class="cam-nametag">
+      <span id="cam1Tag">PLAYER 1</span>
+      <span style="color: var(--bleach-cyan);">1P</span>
+    </div>
+  </div>
+
+  <!-- Cam Player 2 (Naruto Side) -->
+  <div id="cam2" class="cam-wrapper p2">
+    <iframe id="iframe2" allow="autoplay; camera; microphone; fullscreen; display-capture"></iframe>
+    <div id="mock2" class="mock-cam p2-cam-bg">
+      <div class="mock-pulse-wave"></div>
+      <div class="mock-avatar">🌀</div>
+      <div class="mock-cam-tag">2P • NARUTO CAM</div>
+    </div>
+    <div class="cam-nametag">
+      <span id="cam2Tag">PLAYER 2</span>
+      <span style="color: var(--naruto-orange);">2P</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       SCENE 1: VERSUS OVERLAY ELEMENTS
+       ======================================================== -->
+  <!-- Vertical Center Divider & VS Emblem -->
+  <div class="vs-divider">
+    <div class="vs-emblem">VS</div>
+  </div>
+
+  <!-- Top Versus Header -->
+  <div class="versus-header">
+    <div class="versus-title" id="versusTournamentTitle">BLEACH VS NARUTO CHAMPIONSHIP</div>
+    <div class="versus-sub" id="versusMatchPhase">VÒNG BÁN KẾT - BO3</div>
+  </div>
+
+  <!-- Bottom Versus Bar -->
+  <div class="versus-bottom-bar">
+    <!-- P1 Plate -->
+    <div class="vs-player-plate p1">
+      <div class="vs-plate-content">
+        <div class="vs-score-badge" id="p1ScoreVs">0</div>
+        <div>
+          <div class="vs-player-name" id="p1NameVs">PLAYER 1</div>
+          <div class="vs-player-team" id="p1TeamVs">GOTEI 13</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 Plate -->
+    <div class="vs-player-plate p2">
+      <div class="vs-plate-content">
+        <div style="text-align: right;">
+          <div class="vs-player-name" id="p2NameVs">PLAYER 2</div>
+          <div class="vs-player-team" id="p2TeamVs">KONOHA</div>
+        </div>
+        <div class="vs-score-badge" id="p2ScoreVs">0</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       SCENE 2: INGAME OVERLAY ELEMENTS
+       ======================================================== -->
+  <!-- Ingame Top Bar (Nằm ngay trên thanh máu của game) -->
+  <div class="ingame-top-bar">
+    <!-- Left Plate (P1) -->
+    <div class="top-plate p1">
+      <div class="top-content">
+        <span class="top-name" id="p1NameTop">PLAYER 1</span>
+        <div class="top-score-box" id="p1ScoreTop">0</div>
+      </div>
+    </div>
+
+    <!-- Khoảng hở ở giữa nhường chỗ cho đồng hồ đếm giờ 59s của game -->
+    <div class="top-timer-gap"></div>
+
+    <!-- Right Plate (P2) -->
+    <div class="top-plate p2">
+      <div class="top-content">
+        <div class="top-score-box" id="p2ScoreTop">0</div>
+        <span class="top-name" id="p2NameTop">PLAYER 2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Left Dynamic Pillar (Bleach Theme) -->
+  <div class="pillar left">
+    <canvas id="leftAuraCanvas" class="pillar-aura-canvas"></canvas>
+    
+    <div class="pillar-content">
+      <div class="pillar-badge">BLEACH SIDE</div>
+      <div class="pillar-emblem">⚔️</div>
+      <div class="pillar-quote">BANKAI REIATSU</div>
+      
+      <div style="margin-top: 15px;">
+        <div style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 800;" id="p1PillarName">PLAYER 1</div>
+        <div class="pillar-score-dots" id="p1PillarDots"></div>
+      </div>
+    </div>
+
+    <div class="pillar-footer">
+      <div id="leftPillarMatchInfo">BO3 MATCH</div>
+      <div style="margin-top: 4px; font-size: 0.65rem; opacity: 0.5;">DEATH & HOLLOW</div>
+    </div>
+  </div>
+
+  <!-- Right Dynamic Pillar (Naruto Theme) -->
+  <div class="pillar right">
+    <canvas id="rightAuraCanvas" class="pillar-aura-canvas"></canvas>
+    
+    <div class="pillar-content">
+      <div class="pillar-badge">NARUTO SIDE</div>
+      <div class="pillar-emblem">🔥</div>
+      <div class="pillar-quote">CHAKRA OF FIRE</div>
+
+      <div style="margin-top: 15px;">
+        <div style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 800;" id="p2PillarName">PLAYER 2</div>
+        <div class="pillar-score-dots" id="p2PillarDots"></div>
+      </div>
+    </div>
+
+    <div class="pillar-footer">
+      <div id="rightPillarMatchInfo">BvN 2026</div>
+      <div style="margin-top: 4px; font-size: 0.65rem; opacity: 0.5;">WILL OF FIRE</div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       SCENE 3: WINNER OVERLAY ELEMENTS
+       ======================================================== -->
+  <div class="winner-card-container">
+    <div class="winner-card">
+      <div class="winner-badge-top">VICTORY • CHIẾN THẮNG</div>
+      <div class="winner-name-display" id="winnerPlayerName">PLAYER 1</div>
+      <div class="winner-sub-display" id="winnerSubText">WINNER GAME 1</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/overlay.js"></script>
+</body>
+</html>
+

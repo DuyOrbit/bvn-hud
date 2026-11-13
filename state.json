@@ -1,0 +1,43 @@
+{
+  "tournamentName": "BLEACH VS NARUTO CHAMPIONSHIP",
+  "matchPhase": "V�'NG BÁN KẾT - BO3",
+  "bo": 3,
+  "p1": {
+    "name": "DuyQuan10",
+    "team": "Quan10",
+    "score": 0,
+    "character": "Naruto Uzumaki",
+    "vdoUrl": "https://vdo.ninja/?view=ve2Dwzk&solo=1&room=123&password=123"
+  },
+  "p2": {
+    "name": "DuyGoVap",
+    "team": "GoVap",
+    "score": 0,
+    "character": "Kurosaki Ichigo",
+    "vdoUrl": "https://vdo.ninja/?view=ApmthS5&solo=1&room=123&password=123"
+  },
+  "currentScene": "ingame",
+  "winnerTarget": "p1",
+  "winnerText": "WINNER GAME 1",
+  "positions": {
+    "pillarWidth": 240,
+    "cam1": {
+      "top": 130,
+      "left": 260,
+      "width": 290,
+      "height": 165
+    },
+    "cam2": {
+      "top": 130,
+      "left": 1370,
+      "width": 290,
+      "height": 165
+    },
+    "topBar": {
+      "top": 10,
+      "height": 42,
+      "centerGap": 90
+    }
+  },
+  "useTestCam": false
+}

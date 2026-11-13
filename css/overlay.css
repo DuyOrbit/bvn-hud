@@ -1,0 +1,819 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&family=Teko:wght@600;700&family=Be+Vietnam+Pro:wght@600;700;800&display=swap');
+
+:root {
+  --screen-w: 1920px;
+  --screen-h: 1080px;
+
+  --pillar-w: 140px;
+  --cam1-top: 165px;
+  --cam1-left: 240px;
+  --cam1-w: 290px;
+  --cam1-h: 165px;
+
+  --cam2-top: 165px;
+  --cam2-left: 1390px;
+  --cam2-w: 290px;
+  --cam2-h: 165px;
+
+  --bleach-cyan: #00d2ff;
+  --bleach-glow: rgba(0, 210, 255, 0.7);
+  --bleach-dark: #071524;
+
+  --naruto-orange: #ff6a00;
+  --naruto-glow: rgba(255, 106, 0, 0.7);
+  --naruto-gold: #ffd200;
+  --naruto-dark: #241107;
+
+  --transition-smooth: all 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: var(--screen-w);
+  height: var(--screen-h);
+  overflow: hidden;
+  background: transparent;
+  font-family: 'Rajdhani', sans-serif;
+  color: #fff;
+  user-select: none;
+}
+
+/* =========================================================
+   1. WEBCAM CONTAINERS & SEAMLESS 60FPS TRANSITION
+   ========================================================= */
+.cam-wrapper {
+  position: absolute;
+  overflow: hidden;
+  z-index: 20;
+  background: #000;
+  transition: top 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              left 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.4s ease,
+              border-radius 0.65s ease;
+  will-change: top, left, width, height;
+  transform: translateZ(0);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+/* Khóa chặt Iframe vào đúng 100% khung, không cho iframe di chuyển lệch với viền */
+.cam-wrapper iframe,
+.cam-wrapper .mock-cam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+  pointer-events: none;
+}
+
+/* Fallback Mock Camera khi chưa có stream thật */
+.mock-cam {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.p1-cam-bg {
+  background: linear-gradient(135deg, #05131f 0%, #0d283f 100%);
+}
+
+.p2-cam-bg {
+  background: linear-gradient(135deg, #1f0b05 0%, #3f1a0d 100%);
+}
+
+.mock-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.p1 .mock-avatar {
+  border-color: var(--bleach-cyan);
+  box-shadow: 0 0 20px var(--bleach-glow);
+}
+
+.p2 .mock-avatar {
+  border-color: var(--naruto-orange);
+  box-shadow: 0 0 20px var(--naruto-glow);
+}
+
+.mock-cam-tag {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.8);
+  z-index: 2;
+}
+
+.mock-pulse-wave {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  animation: pulseRings 2.5s infinite;
+}
+
+@keyframes pulseRings {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Ingame Nametag on Cam */
+.cam-nametag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 5;
+}
+
+.cam-wrapper.p1 .cam-nametag {
+  border-bottom: 3px solid var(--bleach-cyan);
+}
+.cam-wrapper.p2 .cam-nametag {
+  border-bottom: 3px solid var(--naruto-orange);
+}
+
+/* =========================================================
+   2. SCENE 1: VERSUS STATE (SPLIT SCREEN CINEMATIC)
+   ========================================================= */
+body.scene-versus #cam1 {
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: 1080px;
+  border-radius: 0;
+  opacity: 1;
+  border-right: 2px solid rgba(0, 210, 255, 0.3);
+  animation: camFlyInLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.scene-versus #cam2 {
+  top: 0;
+  left: 960px;
+  width: 960px;
+  height: 1080px;
+  border-radius: 0;
+  opacity: 1;
+  border-left: 2px solid rgba(255, 106, 0, 0.3);
+  animation: camFlyInRight 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes camFlyInLeft {
+  0% { transform: translateX(-100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes camFlyInRight {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Versus Vertical Center Divider & VS Emblem */
+.vs-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 960px;
+  width: 4px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent 0%, #fff 20%, #ffd200 50%, #fff 80%, transparent 100%);
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 40px #ffd200;
+}
+
+.vs-emblem {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #151a26 40%, #000 100%);
+  border: 3px solid var(--naruto-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 0 0 20px #ffd200, 0 0 30px #ff6a00;
+  box-shadow: 0 0 40px rgba(255, 210, 0, 0.5);
+  animation: emblemPulse 2s infinite ease-in-out;
+}
+
+@keyframes emblemPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.06); }
+}
+
+body.scene-versus .vs-divider {
+  opacity: 1;
+}
+
+/* Versus Match Header (Top) */
+.versus-header {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50px);
+  z-index: 35;
+  text-align: center;
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+body.scene-versus .versus-header {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.versus-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--bleach-cyan), #fff, var(--naruto-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.8));
+}
+
+.versus-sub {
+  font-size: 1rem;
+  letter-spacing: 3px;
+  color: var(--naruto-gold);
+  font-weight: 700;
+  margin-top: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* Versus Bottom Bar (Tên & Tỉ số Bay Từ Giữa Ra 2 Bên) */
+.versus-bottom-bar {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.scene-versus .versus-bottom-bar {
+  opacity: 1;
+}
+
+.vs-player-plate {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  position: relative;
+}
+
+.vs-player-plate.p1 {
+  background: linear-gradient(270deg, rgba(7, 21, 36, 0.95) 0%, rgba(0, 0, 0, 0.9) 100%);
+  border-left: 6px solid var(--bleach-cyan);
+  padding: 0 25px 0 35px;
+  transform: skewX(-15deg);
+  box-shadow: -10px 10px 30px rgba(0, 210, 255, 0.25);
+}
+
+.vs-player-plate.p2 {
+  background: linear-gradient(90deg, rgba(36, 17, 7, 0.95) 0%, rgba(0, 0, 0, 0.9) 100%);
+  border-right: 6px solid var(--naruto-orange);
+  padding: 0 35px 0 25px;
+  transform: skewX(-15deg);
+  box-shadow: 10px 10px 30px rgba(255, 106, 0, 0.25);
+}
+
+/* Hoạt ảnh: Thanh tên P1 và P2 bay từ giữa vạch chia ra 2 hướng */
+body.scene-versus .vs-player-plate.p1 {
+  animation: plateSlideOutLeft 0.85s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.scene-versus .vs-player-plate.p2 {
+  animation: plateSlideOutRight 0.85s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes plateSlideOutLeft {
+  0% {
+    transform: translateX(450px) skewX(0deg) scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) skewX(-15deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes plateSlideOutRight {
+  0% {
+    transform: translateX(-450px) skewX(0deg) scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) skewX(-15deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.vs-plate-content {
+  transform: skewX(15deg); /* Bù góc nghiêng để chữ thẳng */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.vs-player-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.vs-player-team {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.vs-score-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.p1 .vs-score-badge {
+  background: rgba(0, 210, 255, 0.2);
+  color: var(--bleach-cyan);
+  border: 2px solid var(--bleach-cyan);
+  text-shadow: 0 0 15px var(--bleach-glow);
+}
+
+.p2 .vs-score-badge {
+  background: rgba(255, 106, 0, 0.2);
+  color: var(--naruto-orange);
+  border: 2px solid var(--naruto-orange);
+  text-shadow: 0 0 15px var(--naruto-glow);
+}
+
+
+/* =========================================================
+   3. SCENE 2: INGAME STATE (CORNER CAMS + TOP SCOREBOARD + ANIMATED PILLARS)
+   ========================================================= */
+body.scene-ingame #cam1 {
+  top: var(--cam1-top);
+  left: var(--cam1-left);
+  width: var(--cam1-w);
+  height: var(--cam1-h);
+  border-radius: 8px;
+  border: 2px solid var(--bleach-cyan);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.35), 0 8px 25px rgba(0,0,0,0.8);
+  opacity: 1;
+}
+
+body.scene-ingame #cam2 {
+  top: var(--cam2-top);
+  left: var(--cam2-left);
+  width: var(--cam2-w);
+  height: var(--cam2-h);
+  border-radius: 8px;
+  border: 2px solid var(--naruto-orange);
+  box-shadow: 0 0 20px rgba(255, 106, 0, 0.35), 0 8px 25px rgba(0,0,0,0.8);
+  opacity: 1;
+}
+
+body.scene-ingame .cam-nametag {
+  opacity: 1;
+}
+
+/* Ingame Top Scoreboard (Nằm ngay sát trên thanh máu, kéo dài liền mạch) */
+.ingame-top-bar {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  width: 1100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 40;
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+body.scene-ingame .ingame-top-bar {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.top-plate {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  width: 440px; /* Kéo dài ra để trải đều trên thanh máu */
+  background: rgba(10, 15, 24, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.top-plate.p1 {
+  transform: skewX(-20deg);
+  border-top: 2px solid var(--bleach-cyan);
+  border-left: 4px solid var(--bleach-cyan);
+  border-bottom: 2px solid rgba(0, 210, 255, 0.4);
+  padding: 0 14px 0 24px;
+  box-shadow: -5px 5px 20px rgba(0, 210, 255, 0.25);
+}
+
+.top-plate.p2 {
+  transform: skewX(20deg);
+  border-top: 2px solid var(--naruto-orange);
+  border-right: 4px solid var(--naruto-orange);
+  border-bottom: 2px solid rgba(255, 106, 0, 0.4);
+  padding: 0 24px 0 14px;
+  box-shadow: 5px 5px 20px rgba(255, 106, 0, 0.25);
+}
+
+.top-plate.p1 .top-content {
+  transform: skewX(20deg);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-plate.p2 .top-content {
+  transform: skewX(-20deg);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Tỉ số tam giác vát cạnh sát đồng hồ */
+.top-score-box {
+  width: 50px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  border-radius: 4px;
+}
+
+.p1 .top-score-box {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(0, 0, 0, 0.8));
+  color: var(--bleach-cyan);
+  border: 1px solid var(--bleach-cyan);
+  text-shadow: 0 0 10px var(--bleach-glow);
+}
+
+.p2 .top-score-box {
+  background: linear-gradient(135deg, rgba(255, 106, 0, 0.35), rgba(0, 0, 0, 0.8));
+  color: var(--naruto-orange);
+  border: 1px solid var(--naruto-orange);
+  text-shadow: 0 0 10px var(--naruto-glow);
+}
+
+/* Khoảng hở ở giữa nhường chỗ cho đồng hồ đếm giờ 59s của game */
+.top-timer-gap {
+  width: 165px;
+  height: 38px;
+}
+
+/* 2 Dải Viền Đen Bên Hông (Pillars) Có Hiệu Ứng Động */
+.pillar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--pillar-w, 140px);
+  z-index: 15;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 8px;
+  transition: width 0.4s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* Ẩn hoàn toàn khi độ rộng = 0px để không che game 16:9 */
+.pillar.pillar-hidden {
+  display: none !important;
+}
+
+.pillar.left {
+  left: 0;
+  background: linear-gradient(90deg, #02070e 0%, #061524 80%, rgba(6, 21, 36, 0.95) 100%);
+  border-right: 2px solid rgba(0, 210, 255, 0.4);
+  box-shadow: 5px 0 25px rgba(0, 210, 255, 0.2);
+  transform: translateX(-100%);
+}
+
+.pillar.right {
+  right: 0;
+  background: linear-gradient(270deg, #100602 0%, #241107 80%, rgba(36, 17, 7, 0.95) 100%);
+  border-left: 2px solid rgba(255, 106, 0, 0.4);
+  box-shadow: -5px 0 25px rgba(255, 106, 0, 0.2);
+  transform: translateX(100%);
+}
+
+body.scene-ingame .pillar.left,
+body.scene-ingame .pillar.right {
+  transform: translateX(0);
+}
+
+/* Hiệu ứng Động Năng Lượng / Aura trên Pillar */
+.pillar-aura-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.pillar-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.pillar-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.left .pillar-badge {
+  background: rgba(0, 210, 255, 0.15);
+  color: var(--bleach-cyan);
+  border: 1px solid var(--bleach-cyan);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+
+.right .pillar-badge {
+  background: rgba(255, 106, 0, 0.15);
+  color: var(--naruto-orange);
+  border: 1px solid var(--naruto-orange);
+  box-shadow: 0 0 15px rgba(255, 106, 0, 0.2);
+}
+
+.pillar-emblem {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.3));
+  animation: floatEmblem 3s infinite ease-in-out;
+}
+
+@keyframes floatEmblem {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.pillar-quote {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pillar-score-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.left .dot.won {
+  background: var(--bleach-cyan);
+  box-shadow: 0 0 10px var(--bleach-cyan);
+  border-color: #fff;
+}
+
+.right .dot.won {
+  background: var(--naruto-orange);
+  box-shadow: 0 0 10px var(--naruto-orange);
+  border-color: #fff;
+}
+
+.pillar-footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   4. SCENE 3: WINNER STATE (FULLSCREEN 100% + POPUP CARD)
+   ========================================================= */
+body.scene-winner.winner-p1 #cam1 {
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  transform: none;
+  border-radius: 0;
+  border: none;
+  box-shadow: inset 0 0 100px rgba(0, 210, 255, 0.4), inset 0 -200px 100px rgba(0, 0, 0, 0.85);
+  opacity: 1;
+  z-index: 25;
+}
+
+body.scene-winner.winner-p1 #cam2 {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6);
+}
+
+body.scene-winner.winner-p2 #cam2 {
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  transform: none;
+  border-radius: 0;
+  border: none;
+  box-shadow: inset 0 0 100px rgba(255, 106, 0, 0.4), inset 0 -200px 100px rgba(0, 0, 0, 0.85);
+  opacity: 1;
+  z-index: 25;
+}
+
+body.scene-winner.winner-p2 #cam1 {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6);
+}
+
+/* Winner Card Popup (Dưới chân) */
+.winner-card-container {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%) translateY(160px);
+  z-index: 45;
+  opacity: 0;
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+body.scene-winner .winner-card-container {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.winner-card {
+  min-width: 700px;
+  padding: 18px 45px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(10, 15, 24, 0.95) 0%, rgba(3, 5, 8, 0.98) 100%);
+  backdrop-filter: blur(15px);
+  border: 2px solid var(--naruto-gold);
+  box-shadow: 0 0 50px rgba(255, 210, 0, 0.4), 0 20px 40px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.winner-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shineWinner 2.5s infinite;
+}
+
+@keyframes shineWinner {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.winner-badge-top {
+  display: inline-block;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--naruto-gold);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.winner-name-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  line-height: 1.1;
+}
+
+.winner-sub-display {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--naruto-gold);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* =========================================================
+   5. SCENE 4: HIDDEN STATE
+   ========================================================= */
+body.scene-hidden #cam1,
+body.scene-hidden #cam2 {
+  opacity: 0;
+  pointer-events: none;
+}
+
